@@ -3,6 +3,7 @@ defmodule FeatureFlagsTest do
   doctest FeatureFlags
 
   test "check if bootsrap was successful" do
-    assert :ets.whereis(:feature_table) != nil
+    assert :ets.whereis(:feature_table) != :undefined
   end
+
 end

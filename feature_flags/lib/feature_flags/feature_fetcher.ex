@@ -9,12 +9,12 @@ defmodule FeatureFlags.FeatureFetcher do
   end
 
   def bootsrap do
-    :ets.new(:feature_table, [:protected])
+    :ets.new(@table, [:bag, :named_table])
     get_splits()
     loop()
   end
 
-  def loop() do
+  defp loop() do
     receive do
     after
       60_000 ->
@@ -37,8 +37,8 @@ defmodule FeatureFlags.FeatureFetcher do
       {:ok, %HTTPoison.Response{body: body, status_code: _status_code}} ->
         :ets.insert(@table, Jason.decode(body))
 
-      {:error, %HTTPoison.Error{reason: reason}} -> Logger.error reason
-
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        Logger.error(reason)
     end
   end
 end

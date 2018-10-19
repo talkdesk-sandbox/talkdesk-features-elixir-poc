@@ -3,16 +3,22 @@ defmodule FeatureFlags do
   Documentation for FeatureFlags.
   """
 
-  @doc """
-  Hello world.
+  def get(name, account_id, default \\ "off") do
+    features =
+      :ets.lookup(:feature_table, :ok)
+      |> Enum.at(0)
+      |> elem(1)
+      |> Map.fetch("objects")
+      |> elem(1)
 
-  ## Examples
+    feature =
+      Enum.filter(features, fn entry -> Map.fetch(entry, "name") == {:ok, name} end)
+      |> Enum.at(0)
 
-      iex> FeatureFlags.hello()
-      :world
-
-  """
-  def hello do
-    :world
+    if feature == nil do
+      default
+    else
+      Map.fetch(feature, "defaultTreatment")
+    end
   end
 end
