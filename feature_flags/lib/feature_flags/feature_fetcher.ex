@@ -31,11 +31,16 @@ defmodule FeatureFlags.FeatureFetcher do
       Authorization: "Bearer #{Application.fetch_env!(:feature_flags, :admin_key)}"
     ]
 
-    response = HTTPoison.get(url, headers, [])
+    options = [ssl: [{:versions, [:"tlsv1.2"]}]]
+
+    response = HTTPoison.get(url, headers, options)
 
     case response do
       {:ok, %HTTPoison.Response{body: body, status_code: _status_code}} ->
-        :ets.insert(@table, Jason.decode(body))
+        :ets.insert(
+          @table,
+          Jason.decode(body) |> elem(1) |> Map.fetch("objects")
+        )
 
       {:error, %HTTPoison.Error{reason: reason}} ->
         Logger.error(reason)
