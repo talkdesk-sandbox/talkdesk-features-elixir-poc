@@ -15,7 +15,7 @@ defmodule FeatureFlags.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {FeatureFlags.Application, []}
+      mod: {FeatureFlags, []}
     ]
   end
 

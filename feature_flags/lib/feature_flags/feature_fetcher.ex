@@ -1,26 +1,24 @@
 defmodule FeatureFlags.FeatureFetcher do
-  use Task
+  use GenServer
   require Logger
 
   @table :feature_table
 
   def start_link(_arg) do
-    Task.start_link(__MODULE__, :bootsrap, [])
+    GenServer.start_link(__MODULE__, %{})
   end
 
-  def bootsrap do
+  def init(state) do
     :ets.new(@table, [:bag, :named_table])
     get_splits()
-    loop()
+    schedule_fetch()
+    {:ok, state}
   end
 
-  defp loop() do
-    receive do
-    after
-      60_000 ->
-        get_splits()
-        loop()
-    end
+  def handle_info(:work, state) do
+    get_splits()
+    schedule_fetch()
+    {:noreply, state}
   end
 
   defp get_splits() do
@@ -45,5 +43,9 @@ defmodule FeatureFlags.FeatureFetcher do
       {:error, %HTTPoison.Error{reason: reason}} ->
         Logger.error(reason)
     end
+  end
+
+  defp schedule_fetch do
+    Process.send_after(self(), :work, 60000)
   end
 end
