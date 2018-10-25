@@ -34,10 +34,18 @@ defmodule FeatureFlags.FeatureFetcher do
   defp get_splits() do
     response = HTTP.get()
 
-    case response do
-      {:ok, %Response{body: body, status_code: _status_code}} ->
-        Store.insert(Jason.decode(body) |> elem(1) |> Map.fetch("objects"))
-        {:ok, Application.fetch_env!(:feature_flags, :period)}
+    with {:ok, %Response{body: body, status_code: status_code}} <- response,
+         200 <- status_code do
+      Store.insert(Jason.decode(body) |> elem(1) |> Map.fetch("objects"))
+      {:ok, Application.fetch_env!(:feature_flags, :period)}
+    else
+      429 ->
+        {:ok,
+         Jason.decode(response |> elem(1) |> Map.fetch(:body) |> elem(1))
+         |> elem(1)
+         |> Map.fetch("X-RateLimit-Reset-Seconds-Org")
+         |> elem(1)
+         |> Kernel.*(1000)}
 
       {:error, %Error{reason: reason}} ->
         {:error, reason}

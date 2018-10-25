@@ -4,6 +4,7 @@ defmodule FeatureFlags.HTTP do
   alias FeatureFlags.HTTP.Response
   alias FeatureFlags.HTTP.Error
 
+  @test_url Application.fetch_env!(:feature_flags, :base_url)
   @base_url "https://api.split.io/internal/api/v1/splits/"
   @headers [
     "Content-Type": "application/json",
@@ -13,7 +14,7 @@ defmodule FeatureFlags.HTTP do
 
   def get(name) do
     url =
-      @base_url <>
+      @test_url <>
         name <> "/environments/" <> Application.fetch_env!(:feature_flags, :environment)
 
     response = HTTPoison.get(url, @headers, @options)

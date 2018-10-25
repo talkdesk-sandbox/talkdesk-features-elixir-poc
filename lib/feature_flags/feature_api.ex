@@ -3,7 +3,6 @@ defmodule FeatureFlags.FeatureAPI do
   alias FeatureFlags.Flag
   alias FeatureFlags.HTTP
   alias FeatureFlags.HTTP.Response
-  alias FeatureFlags.HTTP.Error
 
   def get(name, attrs \\ [], default \\ "off") do
     features = Store.lookup() |> Keyword.get(:ok)
@@ -14,7 +13,15 @@ defmodule FeatureFlags.FeatureAPI do
 
     if feature == nil do
       treatment = get_from_server(name, attrs, default)
-      %Flag{name: name, treatment: treatment}
+
+      case treatment do
+        {:ok, status} ->
+          %Flag{name: name, treatment: status}
+
+        {:wait, time} ->
+          :timer.sleep(time * 1000)
+          get(name, attrs, default)
+      end
     else
       %Flag{name: name, treatment: elem(Map.fetch(feature, "defaultTreatment"), 1)}
     end
@@ -27,15 +34,22 @@ defmodule FeatureFlags.FeatureAPI do
   defp get_from_server(name, attrs, default) do
     response = HTTP.get(name)
 
-    case response do
-      {:ok, %Response{body: body, status_code: _status_code}} ->
-        case Jason.decode(body) |> elem(1) |> Map.fetch("code") do
-          {:ok, _} -> default
-          :error -> get_treatment(Jason.decode(body) |> elem(1), attrs, default)
-        end
+    with {:ok, %Response{body: body, status_code: status_code}} <- response,
+         200 <- status_code do
+      {:ok, get_treatment(Jason.decode(body) |> elem(1), attrs, default)}
+    else
+      429 ->
+        {:wait,
+         Jason.decode(response |> elem(1) |> Map.fetch(:body) |> elem(1))
+         |> elem(1)
+         |> Map.fetch("X-RateLimit-Reset-Seconds-Org")
+         |> elem(1)}
 
-      {:error, %Error{reason: _reason}} ->
-        default
+      404 ->
+        {:ok, default}
+
+      {:error, _} ->
+        {:ok, default}
     end
   end
 
