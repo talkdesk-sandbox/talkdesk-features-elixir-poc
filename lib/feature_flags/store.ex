@@ -3,14 +3,16 @@ defmodule FeatureFlags.Store do
 
   def create() do
     :ets.new(@table, [:bag, :named_table])
+    :ok
   end
 
   def insert(content) do
     :ets.insert(@table, content)
+    :ok
   end
 
   def lookup() do
-    :ets.lookup(@table, :ok)
+    :ets.lookup(@table, :features) |> Keyword.get(:features)
   end
 
   def whereis() do

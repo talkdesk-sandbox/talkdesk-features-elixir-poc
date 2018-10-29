@@ -1,16 +1,11 @@
 defmodule FeatureFlagsTest do
   use ExUnit.Case
-  doctest FeatureFlags
 
   alias FeatureFlags.Store
   alias FeatureFlags.Flag
-  alias FeatureFlags.FeatureAPI, as: API
 
   setup do
     bypass = Bypass.open(port: 8080)
-
-    :ets.new(:counter, [:named_table, :public])
-
     {:ok, bypass: bypass}
   end
 
@@ -19,7 +14,7 @@ defmodule FeatureFlagsTest do
   end
 
   test "getting feature from cache" do
-    feature = API.get("CENTRAL_backup_entries_to_s3", [{"killed", false}, {"rules", []}])
+    feature = FeatureFlags.get("CENTRAL_backup_entries_to_s3", [{"killed", false}, {"rules", []}])
 
     assert feature == %Flag{name: "CENTRAL_backup_entries_to_s3", treatment: "on"}
   end
@@ -34,7 +29,7 @@ defmodule FeatureFlagsTest do
       end
     )
 
-    feature = API.get("unexisting", [], "off")
+    feature = FeatureFlags.get("unexisting", [], "off")
 
     assert feature == %Flag{name: "unexisting", treatment: "off"}
   end
@@ -49,7 +44,7 @@ defmodule FeatureFlagsTest do
       end
     )
 
-    feature = API.get("missingFeature", [])
+    feature = FeatureFlags.get("missingFeature", [])
 
     assert feature == %Flag{name: "missingFeature", treatment: "on"}
   end
@@ -57,34 +52,27 @@ defmodule FeatureFlagsTest do
   test "rate limitting", %{
     bypass: bypass
   } do
-    Bypass.expect(
+    Bypass.expect_once(
       bypass,
       fn conn ->
-        case :ets.lookup(:counter, :count) do
-          [] ->
-            :ets.update_counter(:counter, :count, {2, 1}, {:count, 0})
-            Plug.Conn.resp(conn, 429, ~s<{"X-RateLimit-Reset-Seconds-Org":30}>)
-
-          [count: 1] ->
-            Plug.Conn.resp(conn, 200, ~s<{"name":"someFeature","defaultTreatment":"on"}>)
-        end
+        Plug.Conn.resp(conn, 429, ~s<{"X-RateLimit-Reset-Seconds-Org":5}>)
       end
     )
 
-    feature = API.get("someFeature", [])
+    feature = FeatureFlags.get("someFeature", [])
 
-    assert feature == %Flag{name: "someFeature", treatment: "on"}
+    assert feature == %Flag{name: "someFeature", treatment: "off"}
   end
 
   test "check if a feature is alive" do
     feature = %Flag{name: "feature", treatment: "on"}
 
-    assert API.is_alive(feature)
+    assert FeatureFlags.is_alive(feature)
   end
 
   test "check if off feature is alive" do
     feature = %Flag{name: "off_feature", treatment: "off"}
 
-    assert !API.is_alive(feature)
+    refute FeatureFlags.is_alive(feature)
   end
 end
