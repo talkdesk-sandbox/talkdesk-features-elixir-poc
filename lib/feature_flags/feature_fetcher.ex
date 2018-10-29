@@ -17,7 +17,7 @@ defmodule FeatureFlags.FeatureFetcher do
       {:error, reason} ->
         Logger.error(reason)
 
-        Application.fetch_env!(:feature_flags, :period) |> schedule_fetch()
+        Confex.fetch_env!(:feature_flags, :period) |> schedule_fetch()
     end
 
     {:ok, state}
@@ -30,7 +30,7 @@ defmodule FeatureFlags.FeatureFetcher do
       {:error, reason} ->
         Logger.error(reason)
 
-        Application.fetch_env!(:feature_flags, :period) |> schedule_fetch()
+        Confex.fetch_env!(:feature_flags, :period) |> schedule_fetch()
     end
 
     {:noreply, state}
@@ -40,8 +40,16 @@ defmodule FeatureFlags.FeatureFetcher do
     with {:ok, %Response{body: body, status_code: 200}} <- HTTP.get(),
          {:ok, decoded_body} <- HTTP.decode_body(body),
          {:ok, features} <- get_features(decoded_body),
-         :ok <- Store.insert({:features, features}) do
-      {:ok, Application.fetch_env!(:feature_flags, :period)}
+         _ <-
+           Enum.map(
+             features,
+             fn feature ->
+               with {:ok, name} <- Map.fetch(feature, "name") do
+                 Store.insert(name, feature)
+               end
+             end
+           ) do
+      {:ok, Confex.fetch_env!(:feature_flags, :period)}
     else
       {:ok, %Response{body: body, status_code: 429}} -> handle_rate_limit(body)
       {:error, %Error{reason: reason}} -> {:error, reason}

@@ -23,7 +23,8 @@ defmodule FeatureFlags.MixProject do
       {:jason, "~> 1.1"},
       {:httpoison, "~> 1.0"},
       {:bypass, "~> 0.9", only: :test},
-      {:plug_cowboy, "~>1.0"}
+      {:plug_cowboy, "~>1.0"},
+      {:confex, "~> 3.3.1"}
     ]
   end
 end
