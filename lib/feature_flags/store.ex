@@ -12,12 +12,9 @@ defmodule FeatureFlags.Store do
   end
 
   def lookup(key) do
-    res = :ets.lookup(@table, key)
-
-    if res == [] do
-      nil
-    else
-      Enum.at(res, 0) |> elem(1)
+    case :ets.lookup(@table, key) do
+      [] -> nil
+      [{_, feature}] -> feature
     end
   end
 

@@ -3,7 +3,6 @@ defmodule FeatureFlags.HTTP do
 
   alias FeatureFlags.{HTTP.Response, HTTP.Error}
 
-  @test_url Confex.fetch_env!(:feature_flags, :base_url)
   @base_url "https://api.split.io/internal/api/v1/splits/"
 
   @headers [
@@ -13,7 +12,7 @@ defmodule FeatureFlags.HTTP do
   @options [ssl: [{:versions, [:"tlsv1.2"]}]]
 
   def get(name) do
-    url = @test_url <> name <> "/environments/" <> Confex.fetch_env!(:feature_flags, :environment)
+    url = @base_url <> name <> "/environments/" <> Confex.fetch_env!(:feature_flags, :environment)
 
     case HTTPoison.get(url, @headers, @options) do
       {:ok, %HTTPoison.Response{body: body, status_code: status_code}} ->

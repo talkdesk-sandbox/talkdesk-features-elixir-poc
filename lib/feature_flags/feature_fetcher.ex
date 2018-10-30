@@ -5,21 +5,12 @@ defmodule FeatureFlags.FeatureFetcher do
   alias FeatureFlags.{Store, HTTP, HTTP.Response, HTTP.Error}
 
   def start_link(_arg) do
-    GenServer.start_link(__MODULE__, :ok)
+    GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
   def init(state) do
     Store.create()
-
-    with {:ok, period} <- get_splits() do
-      schedule_fetch(period)
-    else
-      {:error, reason} ->
-        Logger.error(reason)
-
-        Confex.fetch_env!(:feature_flags, :period) |> schedule_fetch()
-    end
-
+    send(self(), :work)
     {:ok, state}
   end
 
@@ -40,21 +31,24 @@ defmodule FeatureFlags.FeatureFetcher do
     with {:ok, %Response{body: body, status_code: 200}} <- HTTP.get(),
          {:ok, decoded_body} <- HTTP.decode_body(body),
          {:ok, features} <- get_features(decoded_body),
-         _ <-
-           Enum.map(
-             features,
-             fn feature ->
-               with {:ok, name} <- Map.fetch(feature, "name") do
-                 Store.insert(name, feature)
-               end
-             end
-           ) do
+         _ <- store_features(features) do
       {:ok, Confex.fetch_env!(:feature_flags, :period)}
     else
       {:ok, %Response{body: body, status_code: 429}} -> handle_rate_limit(body)
       {:error, %Error{reason: reason}} -> {:error, reason}
       error -> error
     end
+  end
+
+  defp store_features(features) do
+    Enum.map(
+      features,
+      fn feature ->
+        with {:ok, name} <- Map.fetch(feature, "name") do
+          Store.insert(name, feature)
+        end
+      end
+    )
   end
 
   defp get_features(decoded_body) do

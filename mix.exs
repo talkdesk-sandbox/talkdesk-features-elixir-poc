@@ -7,6 +7,13 @@ defmodule FeatureFlags.MixProject do
       version: "0.1.0",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
+      preferred_cli_env: [
+        vcr: :test,
+        "vcr.delete": :test,
+        "vcr.check": :test,
+        "vcr.show": :test
+      ],
+      elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps()
     ]
   end
@@ -22,9 +29,11 @@ defmodule FeatureFlags.MixProject do
     [
       {:jason, "~> 1.1"},
       {:httpoison, "~> 1.0"},
-      {:bypass, "~> 0.9", only: :test},
-      {:plug_cowboy, "~>1.0"},
+      {:exvcr, "~> 0.10", only: :test},
       {:confex, "~> 3.3.1"}
     ]
   end
+
+  defp elixirc_paths(:test), do: ["test/support", "lib"]
+  defp elixirc_paths(_), do: ["lib"]
 end

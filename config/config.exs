@@ -6,7 +6,8 @@ config :feature_flags,
   environment: {:system, "SPLIT_ENV"}
 
 if Mix.env() == :test do
-  config :feature_flags, :base_url, "http://localhost:8080/"
+  config :feature_flags, :app, Support.DummyApp
+  config :exvcr, filter_request_headers: ["Authorization"]
 else
-  config :feature_flags, :base_url, "https://api.split.io/internal/api/v1/splits/"
+  config :feature_flags, :app, FeatureFlags.FeatureFetcher
 end
