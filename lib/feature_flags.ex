@@ -3,6 +3,18 @@ defmodule FeatureFlags do
 
   @spec get(String.t(), list(), String.t()) :: Flag.t() | {:error, term()}
   def get(name, attrs \\ [], default \\ "off") do
+    case Confex.fetch_env!(:feature_flags, :active) do
+      true -> get_feature(name, attrs, default)
+      false -> %Flag{name: name, treatment: default}
+    end
+  end
+
+  @spec is_alive(Flag.t()) :: boolean()
+  def is_alive(flag) do
+    flag.treatment == "on"
+  end
+
+  defp get_feature(name, attrs, default) do
     feature = Store.lookup(name)
 
     if feature == nil do
@@ -22,15 +34,9 @@ defmodule FeatureFlags do
     end
   end
 
-  @spec is_alive(Flag.t()) :: boolean()
-  def is_alive(flag) do
-    flag.treatment == "on"
-  end
-
   defp get_from_server(name, attrs, default) do
-    with {:ok, %Response{body: body, status_code: 200}} <- HTTP.get(name),
-         {:ok, decoded_body} <- HTTP.decode_body(body) do
-      {:ok, get_treatment(decoded_body, attrs, default)}
+    with {:ok, %Response{body: body, status_code: 200}} <- HTTP.get(name) do
+      {:ok, get_treatment(body, attrs, default)}
     else
       {:ok, %Response{body: _body, status_code: _status}} -> {:ok, default}
       {:error, %Error{reason: reason}} -> {:error, reason}

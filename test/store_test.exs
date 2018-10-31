@@ -3,7 +3,7 @@ defmodule StoreTest do
 
   alias FeatureFlags.Store
 
-  test "Store table creation" do
+  test "#whereis check if table exists" do
     exists = Store.whereis()
 
     assert exists
@@ -14,11 +14,19 @@ defmodule StoreTest do
     :ok
   end
 
-  test "Store insert and lookup" do
+  test "#insert checks if a feature is correclty inserted in the table" do
     Store.insert("myFeature", %{"treatment" => "on"})
 
-    stored_value = Store.lookup("myFeature")
+    assert Store.lookup("myFeature") == %{"treatment" => "on"}
+  end
 
-    assert stored_value == %{"treatment" => "on"}
+  test "#lookup check if an existing feature is correclty retrieved" do
+    feature = %{"treatment" => "off"}
+
+    Store.insert("myFeature", feature)
+
+    stored = Store.lookup("myFeature")
+
+    assert stored == feature
   end
 end

@@ -10,17 +10,12 @@ defmodule FeatureFlags.FeatureFetcher do
 
   def init(state) do
     Store.create()
-
-    case Confex.fetch_env!(:feature_flags, :active) do
-      true -> send(self(), :work)
-      false -> Logger.info("Fetcher desabled.")
-    end
-
+    send(self(), :work)
     {:ok, state}
   end
 
   def handle_info(:work, state) do
-    with {:ok, period} <- get_splits() do
+    with {:ok, period} <- update_cache() do
       schedule_fetch(period)
     else
       {:error, reason} ->
@@ -32,10 +27,9 @@ defmodule FeatureFlags.FeatureFetcher do
     {:noreply, state}
   end
 
-  defp get_splits() do
+  defp update_cache() do
     with {:ok, %Response{body: body, status_code: 200}} <- HTTP.get(),
-         {:ok, decoded_body} <- HTTP.decode_body(body),
-         {:ok, features} <- get_features(decoded_body),
+         {:ok, features} <- get_features(body),
          _ <- store_features(features) do
       {:ok, Confex.fetch_env!(:feature_flags, :period)}
     else
@@ -60,11 +54,11 @@ defmodule FeatureFlags.FeatureFetcher do
   end
 
   defp handle_rate_limit(body) do
-    with {:ok, decoded_body} <- HTTP.decode_body(body),
-         {:ok, rate_limit} <- get_rate_limit(decoded_body) do
+    with {:ok, rate_limit} <- get_rate_limit(body) do
       {:ok, rate_limit * 1000}
     else
-      {:error, _} -> {:error, :rate_limit}
+      {:error, reason} -> {:error, reason}
+      :error -> {:error, :rate_limit}
     end
   end
 

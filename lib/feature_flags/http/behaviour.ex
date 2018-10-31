@@ -3,5 +3,4 @@ defmodule FeatureFlags.HTTP.Behaviour do
 
   @callback get(String.t()) :: {:ok, %Response{}} | {:error, %Error{}}
   @callback get() :: {:ok, %Response{}} | {:error, %Error{}}
-  @callback decode_body(String.t()) :: {:ok, map()} | {:error, :body_decode}
 end

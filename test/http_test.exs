@@ -4,7 +4,7 @@ defmodule HTTPTest do
 
   alias FeatureFlags.{HTTP, HTTP.Response}
 
-  test "HTTP get" do
+  test "#get/0 performs an HTTP request to get all features" do
     use_cassette "http_get" do
       response = HTTP.get()
 
@@ -12,7 +12,7 @@ defmodule HTTPTest do
     end
   end
 
-  test "HTTP get name" do
+  test "#get/1 performs an HTTP request to get the feature with the given name" do
     use_cassette "http_get_name" do
       response = HTTP.get("CXM_prototype_runtime")
 
@@ -20,23 +20,11 @@ defmodule HTTPTest do
     end
   end
 
-  test "HTTP get invalid" do
+  test "#get/1 performs an HTTP request with an invalid name" do
     use_cassette "http_get_invalid" do
       response = HTTP.get("invalid")
 
       assert {:ok, %Response{body: body, status_code: 404}} = response
     end
-  end
-
-  test "HTTP decode" do
-    decoded =
-      HTTP.decode_body(
-        "{\"objects\":[{\"name\": \"CXM_prototype_runtime\", \"defaultTreatment\": \"on\"}]}"
-      )
-
-    expected =
-      {:ok, %{"objects" => [%{"defaultTreatment" => "on", "name" => "CXM_prototype_runtime"}]}}
-
-    assert expected == decoded
   end
 end
