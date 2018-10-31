@@ -10,7 +10,12 @@ defmodule FeatureFlags.FeatureFetcher do
 
   def init(state) do
     Store.create()
-    send(self(), :work)
+
+    case Confex.fetch_env!(:feature_flags, :active) do
+      true -> send(self(), :work)
+      false -> Logger.info("Fetcher desabled.")
+    end
+
     {:ok, state}
   end
 
@@ -41,14 +46,9 @@ defmodule FeatureFlags.FeatureFetcher do
   end
 
   defp store_features(features) do
-    Enum.map(
-      features,
-      fn feature ->
-        with {:ok, name} <- Map.fetch(feature, "name") do
-          Store.insert(name, feature)
-        end
-      end
-    )
+    Enum.each(features, fn %{"name" => name} = feature ->
+      Store.insert(name, feature)
+    end)
   end
 
   defp get_features(decoded_body) do

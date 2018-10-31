@@ -14,9 +14,13 @@ defmodule FeatureFlags.HTTP do
   def get(name) do
     url = @base_url <> name <> "/environments/" <> Confex.fetch_env!(:feature_flags, :environment)
 
-    case HTTPoison.get(url, @headers, @options) do
-      {:ok, %HTTPoison.Response{body: body, status_code: status_code}} ->
-        {:ok, %Response{body: body, status_code: status_code}}
+    with true <- Confex.fetch_env!(:feature_flags, :active),
+         {:ok, %HTTPoison.Response{body: body, status_code: status_code}} <-
+           HTTPoison.get(url, @headers, @options) do
+      {:ok, %Response{body: body, status_code: status_code}}
+    else
+      false ->
+        {:ok, %Response{body: "", status_code: 404}}
 
       {:error, %HTTPoison.Error{reason: reason}} ->
         {:error, %Error{reason: reason}}

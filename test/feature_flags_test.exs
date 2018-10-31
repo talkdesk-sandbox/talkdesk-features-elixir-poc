@@ -6,7 +6,7 @@ defmodule FeatureFlagsTest do
 
   setup_all do
     :ets.new(:feature_table, [:set, :named_table, :public])
-    HTTPoison.start()
+    :ok
   end
 
   test "check if a feature is alive" do
