@@ -28,7 +28,7 @@ defmodule FeatureFlags.MixProject do
   defp deps do
     [
       {:jason, "~> 1.1"},
-      {:httpoison, "~> 1.0"},
+      {:httpoison, "~> 1.4"},
       {:exvcr, "~> 0.10", only: :test},
       {:confex, "~> 3.3.1"}
     ]

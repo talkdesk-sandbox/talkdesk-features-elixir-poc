@@ -2,7 +2,7 @@ use Mix.Config
 
 config :feature_flags,
   api_key: {:system, "SPLIT_IO_API_KEY", "localhost"},
-  period: {:system, "SPLIT_PERIOD", 60000},
+  period: {:system, "SPLIT_PERIOD", 60_000},
   environment: {:system, "SPLIT_ENV"},
   active: true
 

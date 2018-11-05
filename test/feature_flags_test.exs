@@ -9,16 +9,16 @@ defmodule FeatureFlagsTest do
     :ok
   end
 
-  test "#is_alive check if a feature is alive" do
+  test "#is_enabled? check if a feature is alive" do
     feature = %Flag{name: "feature", treatment: "on"}
 
-    assert FeatureFlags.is_alive(feature)
+    assert FeatureFlags.is_enabled?(feature)
   end
 
-  test "#is_alive check if off feature is alive" do
+  test "#is_enabled? check if off feature is alive" do
     feature = %Flag{name: "off_feature", treatment: "off"}
 
-    refute FeatureFlags.is_alive(feature)
+    refute FeatureFlags.is_enabled?(feature)
   end
 
   test "#get performs a request to get the treatment of a given feature" do

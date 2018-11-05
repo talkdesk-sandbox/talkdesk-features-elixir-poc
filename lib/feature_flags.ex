@@ -9,28 +9,31 @@ defmodule FeatureFlags do
     end
   end
 
-  @spec is_alive(Flag.t()) :: boolean()
-  def is_alive(flag) do
+  @spec is_enabled?(Flag.t()) :: boolean()
+  def is_enabled?(flag) do
     flag.treatment == "on"
   end
 
   defp get_feature(name, attrs, default) do
     feature = Store.lookup(name)
+    build_flag(feature, name, attrs, default)
+  end
 
-    if feature == nil do
-      case get_from_server(name, attrs, default) do
-        {:ok, status} ->
-          %Flag{name: name, treatment: status}
+  defp build_flag(nil, name, attrs, default) do
+    case get_from_server(name, attrs, default) do
+      {:ok, status} ->
+        %Flag{name: name, treatment: status}
 
-        {:error, reason} ->
-          {:error, reason}
-      end
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  defp build_flag(feature, name, attrs, default) do
+    if(check_attrs(feature, attrs)) do
+      %Flag{name: name, treatment: Map.fetch(feature, "defaultTreatment") |> elem(1)}
     else
-      if(check_attrs(feature, attrs)) do
-        %Flag{name: name, treatment: Map.fetch(feature, "defaultTreatment") |> elem(1)}
-      else
-        %Flag{name: name, treatment: default}
-      end
+      %Flag{name: name, treatment: default}
     end
   end
 

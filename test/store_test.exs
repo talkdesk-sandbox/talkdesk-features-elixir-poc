@@ -9,9 +9,7 @@ defmodule StoreTest do
   end
 
   test "#whereis check if table exists" do
-    exists = Store.whereis()
-
-    assert exists
+    assert Store.whereis()
   end
 
   test "#insert checks if a feature is correclty inserted in the table" do
@@ -25,8 +23,6 @@ defmodule StoreTest do
 
     Store.insert("myFeature", feature)
 
-    stored = Store.lookup("myFeature")
-
-    assert stored == feature
+    assert Store.lookup("myFeature") == feature
   end
 end
