@@ -1,17 +1,17 @@
 defmodule StoreTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case
 
   alias FeatureFlags.Store
+
+  setup do
+    :ets.new(:feature_table, [:set, :named_table])
+    :ok
+  end
 
   test "#whereis check if table exists" do
     exists = Store.whereis()
 
     assert exists
-  end
-
-  setup do
-    :ets.new(:feature_table, [:set, :named_table])
-    :ok
   end
 
   test "#insert checks if a feature is correclty inserted in the table" do
