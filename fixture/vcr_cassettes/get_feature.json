@@ -1,0 +1,43 @@
+[
+  {
+    "request": {
+      "body": "",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "***"
+      },
+      "method": "get",
+      "options": {
+        "ssl_options": {
+          "versions": [
+            "tlsv1.2"
+          ]
+        }
+      },
+      "request_body": "",
+      "url": "https://api.split.io/internal/api/v1/splits/CENTRAL_backup_entries_to_s3/environments/Staging"
+    },
+    "response": {
+      "binary": false,
+      "body": "{\"name\":\"CENTRAL_backup_entries_to_s3\",\"environment\":{\"id\":\"98015250-6602-11e6-8728-068f59b32aa9\",\"name\":\"Staging\"},\"trafficType\":{\"id\":\"97fd5ab0-6602-11e6-8728-068f59b32aa9\",\"name\":\"account\"},\"killed\":false,\"treatments\":[{\"name\":\"on\",\"description\":\"backup call_entry to s3 bucket\",\"keys\":[\"59fc3461ac850c000b61ae54\"]},{\"name\":\"off\",\"description\":\"do not backup call_entry to s3 bucket\"}],\"defaultTreatment\":\"on\",\"trafficAllocation\":100,\"rules\":[],\"defaultRule\":[{\"treatment\":\"on\",\"size\":100}],\"creationTime\":1536161313493,\"lastUpdateTime\":1539862773618}",
+      "headers": {
+        "Content-Type": "application/json",
+        "Date": "Tue, 30 Oct 2018 14:59:42 GMT",
+        "Strict-Transport-Security": "max-age=86400; includeSubDomains",
+        "Vary": "Accept-Encoding",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "X-RateLimit-Remaining-IP": "29",
+        "X-RateLimit-Remaining-Org": "19",
+        "X-RateLimit-Reset-Seconds-IP": "7",
+        "X-RateLimit-Reset-Seconds-Org": "7",
+        "X-Request-ID": "qhyu7mht1r",
+        "x-xss-protection": "1;  mode=block",
+        "Content-Length": "554",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  }
+]

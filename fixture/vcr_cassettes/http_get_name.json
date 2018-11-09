@@ -1,0 +1,43 @@
+[
+  {
+    "request": {
+      "body": "",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "***"
+      },
+      "method": "get",
+      "options": {
+        "ssl_options": {
+          "versions": [
+            "tlsv1.2"
+          ]
+        }
+      },
+      "request_body": "",
+      "url": "https://api.split.io/internal/api/v1/splits/CXM_prototype_runtime/environments/Staging"
+    },
+    "response": {
+      "binary": false,
+      "body": "{\"name\":\"CXM_prototype_runtime\",\"environment\":{\"id\":\"98015250-6602-11e6-8728-068f59b32aa9\",\"name\":\"Staging\"},\"trafficType\":{\"id\":\"97fd5ab0-6602-11e6-8728-068f59b32aa9\",\"name\":\"account\"},\"killed\":false,\"treatments\":[{\"name\":\"on\",\"description\":\"The account is handled by the Prototype engine.\",\"keys\":[\"5564b8e2ae19545993000011\",\"56caf8e29ecb71ae2d00000f\",\"5703a2811425e8911e000012\",\"57161bcd02524d77fe00043f\",\"58c02a554682730006559385\",\"59411a84f59a0700061bc407\",\"599582cf636a9f000bc7715b\",\"59a42c4d8ffd31000b242b8d\",\"59bbf0462b7228000e85d253\",\"59dcc9bae18236000e881eb0\",\"59e47e56ce9bae000beaeb0b\",\"59e60cb25da13945a4fb02b5\",\"59e73219633727000d290d84\",\"59e751af0c9fc6000bcdbca3\",\"59ea1bfa483289000ee0ae79\",\"59edc7941c7b12000e4b909c\",\"59edebc31c7b12000e4b90bf\",\"59edf0721c7b12000e4b90c9\",\"5a32a495c07102000e79ff1d\",\"5a5e4169d4139800017932f1\",\"5a5f1781d4139800017932f9\",\"5a5f189bd4139800017932ff\",\"5a61e1d25a3aef000e48ea47\",\"5a6b5b4cf20ac80006abe02e\",\"5a8c5a8172a534000a3955a3\",\"5a90520a9f02e7143f72fa0a\"]},{\"name\":\"off\",\"description\":\"The account is handled by the CXM engine.\"}],\"defaultTreatment\":\"on\",\"trafficAllocation\":100,\"rules\":[],\"defaultRule\":[{\"treatment\":\"off\",\"size\":100}],\"creationTime\":1520267260570,\"lastUpdateTime\":1539016760330}",
+      "headers": {
+        "Content-Type": "application/json",
+        "Date": "Tue, 30 Oct 2018 14:59:43 GMT",
+        "Strict-Transport-Security": "max-age=86400; includeSubDomains",
+        "Vary": "Accept-Encoding",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "X-RateLimit-Remaining-IP": "27",
+        "X-RateLimit-Remaining-Org": "17",
+        "X-RateLimit-Reset-Seconds-IP": "6",
+        "X-RateLimit-Reset-Seconds-Org": "6",
+        "X-Request-ID": "qhyu8d0lps",
+        "x-xss-protection": "1;  mode=block",
+        "Content-Length": "1244",
+        "Connection": "keep-alive"
+      },
+      "status_code": 200,
+      "type": "ok"
+    }
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "request": {
+      "body": "",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "***"
+      },
+      "method": "get",
+      "options": {
+        "ssl_options": {
+          "versions": [
+            "tlsv1.2"
+          ]
+        }
+      },
+      "request_body": "",
+      "url": "https://api.split.io/internal/api/v1/splits/unexisting/environments/Staging"
+    },
+    "response": {
+      "binary": false,
+      "body": "{\"code\":404,\"message\":\"Could not find splitmetadata unexisting\",\"details\":\"\",\"transactionId\":\"qhyu7y1cpd\"}",
+      "headers": {
+        "Content-Type": "application/json",
+        "Date": "Tue, 30 Oct 2018 14:59:42 GMT",
+        "Strict-Transport-Security": "max-age=86400; includeSubDomains",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "X-RateLimit-Remaining-IP": "28",
+        "X-RateLimit-Remaining-Org": "18",
+        "X-RateLimit-Reset-Seconds-IP": "7",
+        "X-RateLimit-Reset-Seconds-Org": "7",
+        "X-Request-ID": "qhyu7y1cpd",
+        "x-xss-protection": "1;  mode=block",
+        "Content-Length": "106",
+        "Connection": "keep-alive"
+      },
+      "status_code": 404,
+      "type": "ok"
+    }
+  }
+]
